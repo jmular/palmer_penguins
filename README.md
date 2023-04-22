@@ -8,5 +8,5 @@ Information the ggplot walkthrough discusses:
   - Cleaning and coloring your data to prepare for visualizations
   - Using the count() and table() function
   - P-Value (null and alternative hypothesis) and the chisq.test() to see if something is statistically significant
-  - Making plots using geom_jitter(), goem_point(), and geom(smooth), including seperating using facet_wrap(~)
+  - Making plots using geom_jitter(), goem_point(), and geom_smooth(), including seperating using facet_wrap(~)
   - Labeling and Annotating Graphs and other aestetics

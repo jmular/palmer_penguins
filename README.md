@@ -1,6 +1,5 @@
-# palmer_penguins
-
-This repository includes tutorials and sample questions I made to help others in my lab with learning general R principles and code as it pertains to the ggplot package.
+# r_walkthroughs_and_tutorials
+This repository includes tutorials and sample questions I made to help others in my lab with learning general R principles and code they may encounter
 
 Information the ggplot walkthrough discusses:
   - Setting up your environment by installing and loading packages (both from CRAN and from .csv example
@@ -10,3 +9,8 @@ Information the ggplot walkthrough discusses:
   - P-Value (null and alternative hypothesis) and the chisq.test() to see if something is statistically significant
   - Making plots using geom_jitter(), goem_point(), and geom_smooth(), including seperating using facet_wrap(~)
   - Labeling and Annotating Graphs and other aestetics
+
+
+Datasets used:
+- palmer penguins package
+- diamonds package (within the tidyverse)

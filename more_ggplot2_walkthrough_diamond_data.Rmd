@@ -1,0 +1,56 @@
+---
+title: "more_ggplot2_walkthrough_diamond_data"
+author: "J. Mular"
+date: "2023-04-22"
+output: html_document
+description: more examples of ggplot2 visualizations, geom_bar
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Setting Up your environment
+For more information on installing and loading your packages please see the ggplot2 walkthrough with the palmer penguins information
+```{r installing and loading}
+install.packages("ggplot2")
+library(ggplot2)
+data(diamonds) #because the diamonds dataset is part of the ggplot2 package we have to use the data() function to load
+```
+
+#geom_bar
+Geom_bar esentially acts as a bargraph within R
+
+When doing a geom_bar if you only note the x value, y value will automatically be used as a count feature.
+```{r}
+ggplot(data=diamonds)+
+  geom_bar(mapping=aes(x=cut))
+```
+##aestetics with geom_bar
+You can add aes descriptors to your geom_bar similar to other plots
+
+```{r}
+ggplot(data=diamonds)+
+  geom_bar(mapping=aes(x=cut,color=cut))
+```
+Note that for adding color to geom_bar R automatically outlines the bars, to change the bar colors use the fill() function instead
+```{r}
+ggplot(data=diamonds)+
+  geom_bar(mapping=aes(x=cut,fill=cut))
+```
+While this chart may look pretty it doesn't tell us much about the data beyond what type of cuts make up the full dataset. 
+
+This is where knowing what data you have can be helpful, for example if we wanted to know the amount of cuts as well as what the the clarity breakdown of those cuts we can change the fill() feature to what we want to see.
+
+```{r}
+ggplot(data=diamonds)+
+  geom_bar(mapping=aes(x=cut,fill=clarity))
+```
+Now we can see a more indepth look at what our counts are and what clarities make up those counts.
+
+#facet_wrap(~) within geom_bar
+We can also use the face_wrap(~) feature with geom_bar similar to other plots to seperate out our data
+```{r}
+ggplot(data=diamonds)+
+  geom_bar(mapping=aes(x=cut,fill=clarity))+
+  facet_wrap(~clarity)
+```

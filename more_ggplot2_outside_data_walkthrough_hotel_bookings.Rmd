@@ -1,0 +1,127 @@
+---
+title: "more_ggplot2_outside_data_walkthrough_hotel_bookings"
+author: "J. Mular"
+date: "2023-04-22"
+output: html_document
+description: examples of using ggplot2 package with .csv file
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Set Up of Environment:
+```{r installing packages}
+install.packages("tidyverse") #for ggplots
+library(ggplot2)
+```
+
+To import csv files into RStudio, use the read.csv and "copy as path" of where it is stored on your computer (note: move your file out of downloads for best practice)
+```{r read.csv example}
+hotel_booking <- read.csv("C:\\R Files\\R Walkthroughs\\hotel_bookings.csv")
+```
+If you notice some error messages make sure that you have two slashes between the pathway and that you are grabbing the right name as a file
+
+Now this is technically being stored as a data in the same way as a vector is
+
+Before starting to do visualization it's important to get a sense of what data you're working through, you can do this in a variety of ways using glimpse(), summary(), head(), or colnames(). For this set im using head() and colnames()
+```{r understanding the data}
+head(hotel_booking)
+colnames(hotel_booking)
+```
+
+#Review of Examples of ggplot2
+I'll show some examples of visualizations you've already learned if you've gone through the other walkthroughs
+##geom_bar
+```{r geom_bar example}
+ggplot(hotel_booking)+
+  geom_bar(mapping = aes(x=distribution_channel))
+```
+```{r geom_bar example 2}
+ggplot(data = hotel_booking) +
+  geom_bar(mapping = aes(x = hotel, fill = market_segment))
+```
+
+
+##geom_point
+```{r}
+ggplot(hotel_booking) +
+  geom_point(mapping = aes(x = lead_time, y = children))
+```
+#Using filtered data in ggplots
+Now say you want to continuously use a sample of your data that you filtered and want to not have to continuously recopy (which can lead to errors and clunky data)
+
+```{r vectoring a dataset with filters}
+july_2015_hotel_booking <- filter(hotel_booking,
+                              (arrival_date_month=="July"&
+                                 arrival_date_year=="2015"))
+```
+Now that you have your subset of data make sure to view to double check your code, do this by using View() and inserting the name of your vector
+```{r viewing vectored data}
+View(july_2015_hotel_booking) #remember View() is case sensitive
+```
+Note your naming strategies as it can be confusing the more vectors you have, direct your attention to your environment pane if you get confused
+
+You can now use this vector in your ggplots
+```{r vectors in ggplot2}
+ggplot(july_2015_hotel_booking) +
+  geom_bar(mapping = aes(x = market_segment, fill = market_segment)) +
+  facet_wrap(~hotel)+
+  labs(title="Hotel Bookings in July 2015")
+
+```
+The resulting graph gives the count of hotel bookings in July 2015 seperating market segment and type of hotel.
+
+##Using vectors of data with piping
+There is also another way we can have filtered data within a vector and that is using the pipe feature %>%
+
+For example say we want to see filtered data where the hotel is only "City Hotel" and are "Online TA" we can do:
+```{r vectoring with filtering example 2}
+online_ta_city_hotels <- hotel_booking %>%
+  filter(hotel=="City Hotel") %>%
+  filter (market_segment=="Online TA")
+```
+
+We can then use that vector within our ggplots
+```{r vectors in ggplot2 example 2}
+ggplot(online_ta_city_hotels) +
+  geom_point(mapping = aes(x = lead_time, y = children))
+```
+Either way works (pipe vs filter from get go) but depending one what you are looking for and how your brain makes sense of concepts you may gravitate towards one or the other!
+
+##Labeling with vectors
+Once you label a vector and run it you can use it at any point in your code even in labeling
+
+Take for example the beginning and ending of this data set (aka the earliest data point and latest data point)
+    Now you might know this information if you've been given this as an assignment but this is one example of something you want to use the computer to search for to double check your work
+
+We can find this out by using the min() and max() function
+```{r min() max() functions}
+mindate <- min(hotel_booking$arrival_date_year) #note you need to specify the column you are grabbing the information from when you use min and max function
+maxdate <- max(hotel_booking$arrival_date_year)
+```
+Run and make sure it shows up in your environment spot
+
+Then we can use it within our visualizations
+```{r}
+ggplot(data = hotel_booking) +
+  geom_bar(mapping = aes(x = hotel, fill = market_segment))+
+  labs(title="Comparison of Market Segments by Hotel type for Hotel Bookings",
+       subtitle=paste0("Data from: ", mindate, " to ", maxdate)) #note the paste0 combines what's made in the parenthesis
+```
+
+We can clean up our labeling a little more by putting a caption and labeling our axies
+```{r}
+ggplot(data = hotel_booking) +
+  geom_bar(mapping = aes(x = hotel, fill = market_segment))+
+  labs(title="Comparison of Hotel type by Market Segment for Hotel Bookings",
+       subtitle=paste0("Data from: ", mindate, " to ", maxdate),caption="Practice Data from Google Analytics", x="Hotel Type", y="Number of Bookings")
+```
+#Exporting Your Visualization
+You can run this code and have the visualization come up in the Plots window. 
+
+From there you can export your plot into a .jpeg or .png to be able to use in other formats (such as putting it in slides or on your website.)
+
+I have attached an example of what your exported png file should look like in the repository
+
+

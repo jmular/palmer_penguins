@@ -1,0 +1,205 @@
+---
+title: "ggplot2_walkthrough_palmer_penguins"
+author: "J. Mular"
+date: "2023-04-22"
+output: html_document
+description: ggplot2 package visualizations, geom_jitter, geom_point, geom_smooth
+---
+Revisions:
+4/22/23: Tutorial split from master file into separate tutorials for ease
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Setting Up Environment
+If you have not already set up your environment by installing and loading your ggplot2 packages please do so now, if you need a refresher please see the R_basics_walkthrough_palmer_penguins.rmd file
+
+```{r}
+library(tidyverse)
+library(palmerpenguins)
+penguins<- penguins %>% filter(!is.na(sex))
+```
+
+
+#Making Plots Using ggplot
+Using our example of counting species that are on the island
+
+Let's try and make it more visually noticable and use one of the plotting tools from the ggplot package.
+
+##geom_jitter
+For any ggplot we need to assign the x and y axis within the aes().
+
+```{r geom_jitter example}
+ggplot(penguins) +
+  geom_jitter(mapping = aes(x = island, y = species))
+```
+Now we can see a quick visual of how many of each species are in each island, (Note: I added a geom_jitter for visual clarity)
+
+Geom_jitter functions as a scatterplot but differs from (geom_point [another scatterplot feature]) in that it adds random noise, which helps with overplotting (when data points overlap) 
+
+##geom_point
+geom_point leads to scatterplots but does not induce random noise
+
+Lets try plotting flipper length vs. body mass
+```{r geom_point example 1}
+ggplot(data=penguins)+
+  geom_point(mapping=aes(x=flipper_length_mm, y=body_mass_g))
+```
+Amazing, now lets try plotting bill length vs. depth
+```{r geom_point example 2}
+ggplot(data=penguins) +
+  geom_point(mapping=aes(x=bill_length_mm, y=bill_depth_mm))
+```
+
+##geom_smooth
+geom_smooth graphs leads to smooth line plots with the datapoints; they are helpful for showing general trends in data
+
+There is two types (called "methods") of smoothing
+  *loess smoothing is best for <1000 points
+          +#geom_smooth(method="loess")
+  *gam smoothing (Generalized Additive Model smoothing): best for large # of points
+          +#geom_smooth(method="gam")
+  R will try and compute whichever method it deems appropriate but it's good to get in the habit of noting.
+
+```{r geom_smooth example}
+ggplot(data=penguins)+
+  geom_smooth(method=loess, mapping=aes(x=flipper_length_mm, y=body_mass_g))
+```
+
+##combining geom_point and geom_smooth
+GGplot visualizations can be piled on.
+
+For example geom_point and geom_smooth can also be combined in a singular visualization by using the plus + feature
+```{r combination geom_point and geom_smooth}
+ggplot(data=penguins)+
+  geom_point(mapping=aes(x=flipper_length_mm, y=body_mass_g))+
+  geom_smooth(method=loess, mapping=aes(x=flipper_length_mm, y=body_mass_g))
+```
+
+##Cleaning Up Code
+  If you notice your code getting a bit complicated (especially with two types of ggplot2) you can change where you place you code of the aes (aestetics) to the section in the ggplot like below:
+  
+```{r cleaning up code}
+ggplot(penguins, aes(x=flipper_length_mm, y=body_mass_g)) + 
+  geom_point()+
+  geom_smooth(method=loess)#note even if you move the aes you should still classify the method for geom_smooth
+  
+```
+
+##Facet-ing Data
+If you would like separate the information of the visualization out we can use the facet_wrap(~) and then which ever parameter you'd like to seperate by
+
+```{r facet_wrap example}
+ggplot(penguins, aes(x=flipper_length_mm, y=body_mass_g)) +
+  geom_point()+
+  geom_smooth(method=loess)+
+  facet_wrap(~species)
+```
+
+#Labeling and Annotating Graphs and Other Aestetics
+##Identifying Groups in Data
+To identify a set of data from your code (for example type of species) we can add that information within our aes area. We can use color, size, and shape to distinguish
+
+In the example below I used color:
+```{r aes color}
+ggplot(penguins, aes(x=flipper_length_mm, y=body_mass_g, color=species)) + 
+  geom_point()+
+  geom_smooth(method=loess)
+```
+  Aestetics can pile on each other, for example if you want the species to be seprate by color and shape add a comma and connect them
+
+```{r aes color and shape}
+ggplot(penguins, aes(x=flipper_length_mm, y=body_mass_g, color=species, shape=species)) + 
+  geom_point()+
+  geom_smooth(method=loess)
+```
+
+The alpha function can be used as well, it shows the graph and legend with different transparencies. 
+
+Note: this can be difficult for those with low-vision so use caution. 
+
+```{r aes alpha}
+ggplot(data=penguins)+
+  geom_smooth(mapping=aes(x=flipper_length_mm, y=body_mass_g, alpha=species))
+```
+
+Another type of aestetics you can use is the linetype function which can showcase lines as different types for easier visual representation
+
+Note: especially helpful if you are only using a black/white printed form
+
+```{r aes linetype}
+ggplot(data=penguins)+
+  geom_smooth(method=loess, mapping=aes(x=flipper_length_mm, y=body_mass_g, linetype=species))
+```
+
+###Labeling
+To better let people know what your plots are about labels are helpful, you can add these by using the lab function.
+
+```{r labelling}
+ggplot(penguins, aes(x=flipper_length_mm, y=body_mass_g, color=species)) + 
+  geom_point()+
+  geom_smooth(method=loess)+
+  labs(title="Palmer Penguins: Penguin Body Breakdown", subtitle="Plot of length of flipper by body mass", caption="Data Collected by Dr. Kristen Gorman")
+  
+```
+
+###Annotating
+Annotations are a bit more difficult as you have to assign them to specific points, all of our aesthetics can be added to this as well
+
+Other aesthetics can include bolding, size change, and text on an angle
+```{r}
+ggplot(penguins, aes(x=flipper_length_mm, y=body_mass_g,  color=species)) + 
+  geom_point()+
+  geom_smooth(method=loess)+
+  labs(title="Palmer Penguins Body Breakdown", subtitle="Plot of length of flipper by body mass", caption="Data Collected by Dr. Kristen Gorman")+
+  annotate("text", x=190,y=5000, label="The Gentoos are the largest", fontface="bold",size=4.5,angle=25)
+```
+For each visualization you do you might need to play around with each annotation to make sure things are clear. 
+
+If you're finding the concept of annotating difficult you may enjoy exporting your visualization and then adding in your annotations with a different program (such as Adobe Illustrator) depending on your needs
+
+#Quick Note for Other Important R Tools (Functions, If/Then Statements, For Loop)
+Withing looking at ggplot codes you might come across other bits of R base
+
+This is meant to be a quick note and not a full tutorial:
+
+Functions are when you have a specific item that you then put through the function to produce a value
+
+If/Then Statements are for when a certain condition is met [if] something else happens [then]
+
+For Loops are for when you want to have pieces of code that repeat or can build off of eachother
+  Often these are used with a combination of other items
+  The general set up is usually:
+      for(item in list_of items){
+          do something(item)
+          return()
+          print()
+      }
+  
+Lets see how these tools interact by counting the number of penguin data collected by species
+
+```{r functions, for loop, and if/then combined}
+count_species <- function(x, value) { #first turn into a variable for easy usage
+                                #in the function the [value] becomes [count] when it is run
+  count <- 0  #starting count at 0 value as best practice
+  for (penguin in 1:length(x)) {  #begin a loop by specifying what you are looking for [penguin] within a vector [1:length(x)]
+    if (x[penguin] == value)  #if (then) statements have condition [x[penguin] == value)] and then the action [count <- count + 1]
+      {count <- count + 1} } #part of a loop is to allow for continuous function, this set up allows the count to be updated with each pass
+  count} #this is the outcome of the function, ultimately what will be shown as the final when it's run
+```
+
+This loop within a function is then stored in a vector.
+We can then use the vector to find the count for each individual species
+```{r}
+count_species(penguins$species, "Adelie") #the set up for this would be pulling the column name [penguins$species] and then specifying what you're looking for [Adelie]
+count_species(penguins$species, "Gentoo")
+count_species(penguins$species, "Chinstrap")
+
+```
+
+Note: There are easier ways to go about counting (as seen above) but this is a small way to see how these concepts can be used within greater bits of code
+
+```
+For more information and examples of using other ggplot functions (like geom_freqpoly and geom_boxplot): https://ggplot2-book.org/
